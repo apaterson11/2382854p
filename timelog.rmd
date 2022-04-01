@@ -1,0 +1,388 @@
+# Timelog
+
+* QUIC: An Investigation Into the Future of Video Streaming
+* Alex Paterson
+* 2382854p
+* Colin Perkins
+
+## Guidance
+
+* This file contains the time log for your project. It will be submitted along with your final dissertation.
+* **YOU MUST KEEP THIS UP TO DATE AND UNDER VERSION CONTROL.**
+* This timelog should be filled out honestly, regularly (daily) and accurately. It is for *your* benefit.
+* Follow the structure provided, grouping time by weeks.  Quantise time to the half hour.
+
+## Week 1
+#### Total: 12 hours
+
+### 20.09.21
+* *6 hours* Read through project proposals, research interesting ones and note down favourites
+
+### 21.09.21
+* *6 hours* Read remaining project proposals, research interesting ones and note down favourites, choose to stick to original self-defined project
+
+## Week 2
+#### Total: 10.5 hours
+
+### 27.09.21
+* *4 hours* Prepare for meeting with Colin - read papers, refine aims and motivation
+
+### 28.09.21
+* *2 hours* Further preparation for meeting with Colin - read papers, explore network simulators, form agenda
+
+### 29.09.21
+* *0.5 hours* meeting with Colin
+
+### 01.10.21
+* *1 hour* set up ubuntu WSL and tested aioquic 
+
+### 03.10.21
+* *2 hours* further experimented with aioquic, read about WebTransport, prep reading for RFC9000
+
+### 05.10.21
+* *1 hour* read paper HTTP over UDP: an Experimental Investigation of QUIC and wrote Annotated Bibliography and Critique of the paper.
+
+## Week 3
+#### Total: 15 hours
+
+### 06.10.21
+* *0.5 hours* meeting with Colin
+* *1.5 hours* read into WebTransport, examined docs, thought of potential avenues we could go down with webtransport - possible video conferencing application that utilises QUIC? has this been done before?
+
+### 09.10.21
+* *4 hours* created first build of a simple WebRTC video conferencing app. next steps - looking to recreate with QUIC and WebTransport instead. Additionally, reorganised github repo for project.
+* *1 hour* read through WebTransport drafts
+
+### 11.10.21
+* *3.5 hours* experimented with quiche
+
+### 12.10.21
+* *2.5 hours* experimented with quinn and started to implement webtransport in the previously built WebRTC zoom clone.
+
+### 13.10.21
+* *2 hours* skimmed through RFC9000 and prepped for meeting.
+
+## Week 4
+#### Total: 8.75 hours
+
+### 13.10.21
+* *0.5 hours* meeting with Colin
+
+### 18.10.21
+* *1.5 hours* got quinn example running
+
+### 19.10.21
+* *2.5 hours* started work on prototype that takes video data and preps for webtransport data transfer
+* *2.75 hours* continued work and tried to get quinn working
+
+### 20.10.21
+* *1.5 hours* figured out that I had to get nightly build of Chrome, started to replace QuicTransport with WebTransport, prepped for meeting with Colin
+
+## Week 5
+
+### 20.10.21
+* *0.5 hours* meeting with Colin
+
+### 22.10.21
+* *3 hours* began to write Analysis stage of diss/proposition for Colin to read over detailing project aims, methods etc
+
+### 23.10.21
+* *2.5 hours* continued to experiment with quiche, attempting to get handshake to work
+
+### 24.10.21
+* *4 hours* continued to experiment with quiche, attempting to get handshake to work
+
+### 26.10.21
+* *3 hours* continued to experiment with quiche, attempting to get handshake to work, prepped for colin meeting
+
+## Week 6
+### 27.11.21
+* *0.5 hours* meeting with Colin
+
+### 01.11.21
+* *5 hours* investigated server implementation colin shared, got handshake working, got webtransport build to send datagrams to server. *TO DO* figure out the Handlers stuff in the server - replaced with messy line about path
+
+### 02.11.21
+* *3.5 hours* worked on trying to figure out how to have server send data to other user
+
+### 03.11.21
+* *5 hours* server now sends datagrams back to other users. Does not do so effectively and it's all scrambled.
+
+## Week 7
+### 04.11.21
+* *0.5 hours* meeting with Colin, set out timeline and plan for further weeks
+
+### 08.11.21
+* *5 hours* everything is broken, trying to figure out why, chrome issues?
+
+### 09.11.21
+* *3 hours* figured it out. Not much time to do anything else - Barclays interview. No Colin meeting this week.
+
+## Week 8
+### 13.11.21
+* *3 hours* trying to get streams working.
+
+### 14.11.21
+* *4 hours* get streams data to send to server but having issues getting it back.
+
+### 16.11.21
+* *5 hours* still working on getting streams back. Have identified that stream_id and session_id are never actually sent properly in the request headers and are scrambled in the actual body of data being sent.
+
+## Week 9
+### 17.11.21
+* *0.5 hours* meeting with Colin. Buffer issues?
+
+### 22.11.21
+* *5 hours* fixed size of data being sent - datagrams now working well. also fixed endianness issues.
+
+### 23.11.21
+* *4.5 hours* working on trying to get streams to work. current issues to do with stream being read as unidirectional instead of bidirectional.
+
+## Week 10
+### 24.11.21
+* *0.5 hours* meeting with Colin
+
+No other work done this week, meeting cancelled.
+
+## Week 11
+### 05.12.21
+* *3 hours* working on streams issues
+
+### 06.12.21
+* *3 hours* discovered that WebTransport devs hide headers on purpose and aioquic expects stream_id to be sent but WebTransport does not.
+
+### 07.12.21
+* *4.75 hours* figured out streams issues. Data is now sent to correct place. Now getting further issues where data is being scrambled and so stream_id is not being received by client correctly and therefore loads of viewports are generated. 
+
+### 08.12.21
+* *1.5 hrs*
+
+### 09.12.21
+* *3 hrs*
+
+### 21.12.21
+* *4 hrs* learned more about how streams work. fixed infinite generation with workaround but discovered that data is being sent from client to server back to same client.
+
+### 22.12.21
+* *6 hrs* got video data to send to correct place (i.e. client A to server to client B and vise versa). However, video data now is not being displayed despite remote view being created. Python issue? Might move on to translating to C. Need to make sure datagrams are sending correctly too and not A to server to A.
+
+* *1 hr* Video data being sent had to be compressed even smaller - guessing streams are more intensive for the server. Will benchmark this.
+
+### 27.12.21
+* *3 hrs* set up Cyhton implementation of server
+
+### 28.12.21
+* *4 hrs* begin to benchmark Cython server - is python the issue? Does the issue lie with my JS code? Need to figure this out before I write a C server.
+
+### 29.12.21
+* *1 hrs* benchmarking datagrams cython vs python server... they are the same. have I done cython wrong or is the server not the problem?
+
+### 30.12.21
+* *1.5 hrs* investigating the way I send data - eof and bufferOffset do not always line up between sending and receiving end. It seems that an unnecessary amount of datagrams are sent. 
+
+### 31.12.21
+* *3 hrs* 
+
+### 01.01.22
+* *2 hrs* found that when sending data every 100ms, sequence numbers are frequently duplicated. issue seems to be that when data size is larger, it takes program longer to send all data from that frame, so data from next frame get sent before previous frame. can we reconstruct on other end? ideally, but not when we are getting duplicate/incorrect sequence numbers? can we discard duplicate packets? we can, but for some reason it sends so many packets with duplicate sequence numbers. 
+
+### 02.01.22
+* *5.5 hrs* 
+
+### 03.01.22
+* *1 hrs* streams do come in ordered but are not reliable - too many go missing and instead packets come in with malformed data. why is this?
+
+### 04.01.22
+* *9.5 hrs* refactored client, implemented techniques to manage disordered and missing packets. nearly working - currently having issues with the unordered packets. current issue is to do with the data structure that stores the queue.
+
+### 05.01.22
+* *3.75 hrs*
+
+### 08.01.22
+* *5.25 hrs* finally got datagrams to work with packet reordering and accounting for missing and duplicated packets.
+    - interesting observations:
+    - is it the client or the server that is slow? js client is undoubtedly slow and "buffer period" to wait before forgetting a frame has to increase when frame size is larger. one interesting thing to notice: with 100x100 frame, client receives datagrams almost as fast as it sends them. with a 300x150 frame, it takes much longer. why is this? server or client's fault?
+    - 100 x 100 works pretty well - if frames are dropped, the whole thing gets more delayed. Could implement some system to cut out some frames to account for it but not too important for purpose of research.
+    - possible conclusion: QUIC works well, but WebTransport is simply too slow at this point in time. However, there is potential. A more talented developer with more time, effort and JS knowledge could implement some more efficient client that can handle the data that QUIC sends reliably.
+        - Additionally, the facilities that WebTransport provides (e.g. multiple streams) could prove very effective in the right hands.  
+    - even with unreliable datagrams, a pretty cohesive video stream comes through, albeit with delay. Proves QUIC could handle video conferencing with the right technology to pair it with?
+
+### 10.01.22
+* *2 hrs*
+
+### 11.01.22
+* *2 hrs* got streams working, but figured out why they don't work properly - message boundaries are not preserved. How can we deal with this? 
+
+* *1.25 hrs* streams now working with 100x100 frame size at least. Need to fix bug where offset is off for user connecting second because data sends before both users connect. Finally realising that message boundaries were not preserved led me to scrap the headers I was sending and simplify the code.
+
+* *68 hrs* completed over holidays
+
+### 14.01.22
+* *3 hrs* learning MiniNet
+
+### 15.01.22
+* *2.5 hrs* learning MiniNet
+
+### 18.01.22
+* *5.5 hrs* got chrome canary to connect to clients running on mininet  
+
+## Week 3
+
+### 20.01.22
+* *1 hr* mininet learning
+
+### 21.01.22
+* *1 hr* mininet learning
+
+### 24.01.22
+* *5.5 hr* attempting bridging and port forwarding to get client to talk to server
+
+### 25.01.22
+* *2.5 hr* realised linux chrome has recently enabled WebTransport features. stopped trying to port forward/bridge, got it all running locally on VirtualBox. Additionally drew up diagram for testing topologies.
+
+## Week 4
+
+### 30.01.22
+* *1.75 hrs* set up dumbell topology. issue: cannot access localhost when running within mininet.
+* *1.25 hrs* now able to access localhost, but it seems that localhost is not shared between hosts. Have to run separate sessions (sessions, not windows) of chrome to access both localhost:4000 and localhost:4001 with each session being ran on each host's xterm. This is an issue because neither session seems to be able to connect to the webtransport server. 
+
+### 31.01.22
+
+* *5 hrs* figured out issue, changed address server was running on from web-platform.test to 10.0.0.3 in tools/serve/serve.py. Now getting certificate issues - need to figure this out.
+
+### 01.02.22
+
+* *1.25 hrs* figured out how to connect to server. Had to change /etc/hosts entry from "127.0.0.1   web-platform.test" to "10.0.0.3 web-platform.test". New issue, camera cannot run on two separate instances of chrome. Can connect by doing 10.0.0.2:4001 in the same browser session but this is unsecure and WebTransport does not work.
+
+* *1.5 hrs* investigated how to split webcam using OBS Virtualcam.
+
+### 02.02.22
+* *0.75 hr* wrote out tests and prepared for meeting.
+
+## Week 5
+
+### 04.02.22
+* *3.25 hrs* fixed certificate issues, mininet setup now fully working.
+
+### 06.02.22
+* *1 hr*
+
+### 07.02.22
+* *5.25 hrs* begin running experiments. issues with mesauring packet loss.
+
+### 08.02.22
+* *2.75 hrs* managed to automate starting the clients, server and chrome instances.
+
+## Week 6
+
+### 10.02.22
+* *2.25 hrs* wrote abstract, motivations and aims. started thinking about background research.
+
+### 11.02.22
+* *2.5 hrs* fixed VM issues and investigated tcpdump. Next, investigate how we can stop tcpdump when google chrome prints to console. 
+
+### 13.02.22
+* *7.25 hrs* resized virtualbox disk, worked on reading chrome console log, issues with chrome window being invisible for some reason, great. selenium was shit and javascript cannot write to files on its own, brilliant.
+
+### 14.02.22
+* *1.5 hrs* selenium
+
+### 15.02.22
+* *4.25 hrs* got selenium working. now working on changing bandwidth and tcpdump capture.
+
+## Week 7
+
+### 20.02.22
+* *4.5 hrs* now changes bandwidth, captures tcp and outputs everything. todo: work out how to decrypt headers to get sequence number and run test.
+* *.75 hrs* trial run of testing and created basic outline for user tests
+
+### 21.02.22
+* *2.5 hrs* 
+* *1.75 hrs*
+
+### 22.02.22
+* *3.25 hrs*
+
+## Week 8
+### 25.02.22
+* *2 hrs* tests
+
+### 26.02.22
+* *5 hrs* tests
+
+### 28.02.22
+* *2 hrs* diss intro
+
+### 01.03.22
+* 6.5 hrs* diss background
+
+## Week 9
+
+### 04.03.22
+* *3 hrs* got datagrams bandwidth test completely working.
+
+### 06.03.22
+* *5 hrs* wrote more background and some analysis/requirements
+
+### 07.03.22
+* *6 hrs* finished first draft of analysis/requirements, started design
+
+### 08.03.22
+* *5 hrs* finished first draft of design, did some more background
+
+### 11.03.22
+* *8 hrs* finished background for now (may come back to http/3 and video transfer sections), started implementation
+
+### 12.03.22
+* *7 hrs* finsihed first draft of implementation
+
+### 13.03.22
+* *2 hrs* polished earlier stages
+
+### 17.03.22
+* *8 hrs* added diagrams to design and implementation, restructured to make it clearer
+
+### 18.03.22
+* *5 hrs* finished new draft of design and implementation
+
+### 19.03.22
+* *2 hrs* started to run tests
+
+### 21.03.22
+* *6 hrs* continued running tests, polishing diss
+
+### 22.03.22
+* *10 hrs* continued running tests, polishing diss
+
+### 24.03.22
+* *8 hrs* tests done, started writing up eval
+
+### 25.03.22
+* *8 hrs* continue writing up eval
+
+### 26.03.22
+* *8 hrs* continue writing up eval, add more WebRTC tests
+
+### 27.03.22
+* *8 hrs* nearly finish eval
+
+### 28.03.22
+* *8 hrs* finish eval, finish conclusion
+
+### 29.03.22
+* *8 hrs* polish diss
+
+### 30.03.22
+* *8 hrs* finish diss, ready code and finish video
+
+### 01.04.22
+* *2 hrs* final checks, submit diss
+
+
+
+
+
+
+
+
+

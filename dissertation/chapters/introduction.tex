@@ -1,0 +1,163 @@
+\chapter{Introduction}
+
+% reset page numbering. Don't remove this!
+\pagenumbering{arabic} 
+
+% \section{Motivation}
+
+% --- colin's guidance
+
+% A good paper introduction is fairly formulaic. If you follow a simple set
+% of rules, you can write a very good introduction. The following outline can
+% be varied. For example, you can use two paragraphs instead of one, or you
+% can place more emphasis on one aspect of the intro than another. But in all
+% cases, all of the points below need to be covered in an introduction, and
+% in most papers, you don't need to cover anything more in an introduction.
+%
+% Paragraph 1: Motivation. At a high level, what is the problem area you
+% are working in and why is it important? It is important to set the larger
+% context here. Why is the problem of interest and importance to the larger
+% community?
+
+The Internet is in a constant state of change, with practices and protocols constantly evolving to push development forward. One example of this is the recent development of WebTransport, an emerging API that aims to be the definitive protocol to use for client-server connections in certain scenarios, including video conferencing applications. 
+Currently, the WebRTC project is widely used for simple video conferencing applications due to its widely-supported nature and ease-of-use for the developer; however, WebRTC has some core issues that may continue to become more problematic over time. 
+Furthermore, Cisco forecast that, by 2022, "IP video traffic will be 82 percent of all IP traffic (both business and consumer)" and "Live Internet video will account for 17 percent of Internet video traffic". \cite{cisco_report} All this serves as motivation to evaluate whether it is worth continuing development on WebRTC or instead attempting to garner more widespread support for WebTransport as we continue to develop video conferencing applications and the Internet as a whole.
+
+
+
+% Paragraph 2: What is the specific problem considered in this paper? This
+% paragraph narrows down the topic area of the paper. In the first
+% paragraph you have established general context and importance. Here you
+% establish specific context and background.
+
+WebTransport's proposed use cases combined with its intention to provide developers with flexible options for data transfer are particularly intriguing for applying to a video conferencing context. Developers could have more flexibility in how they transfer data in comparison to contemporary technologies such as WebRTC and users could have a better experience with more efficient data transfer. Moreover, QUIC's efficient data transfer and connection establishment could prove advantageous over alternatives such as WebRTC's SRTP.
+
+
+
+% Paragraph 3: "In this paper, we show that...". This is the key paragraph
+% in the introduction - you summarize, in one paragraph, what are the main
+% contributions of your paper, given the context established in paragraphs
+% 1 and 2. What's the general approach taken? Why are the specific results
+% significant? The story is not what you did, but rather:
+%  - what you show, new ideas, new insights
+%  - why interesting, important?
+% State your contributions: these drive the entire paper.  Contributions
+% should be refutable claims, not vague generic statements.
+
+In this paper, we show that a WebRTC build we developed outperforms two WebTransport builds we developed. This is evidenced by results from performance-oriented experiments and a user survey that backs up these experiments. However, our findings are not as straightforward as this - following these results, we discuss how our WebTransport build that utilises datagrams has potential to outperform WebRTC. Although this idea could easily be refuted, this paper proposes that this argument and following discussion is important as every new technology needs time, effort and widespread adoption to mature and realise its full potential. We argue that WebTransport is no exception to this, and hope that this paper may aid the API in getting the attention it deserves in order to keep pushing the development of the Internet forward.    
+% \todo{come back once results are gathered}
+
+
+% Paragraph 4: What are the differences between your work, and what others
+% have done? Keep this at a high level, as you can refer to future sections
+% where specific details and differences will be given, but it is important
+% for the reader to know what is new about this work compared to other work
+% in the area.
+
+To our knowledge, this paper is the first to evaluate WebTransport's performance in a video-conferencing application.
+There exists several papers measuring QUIC's performance in scenarios related to the transfer of video data \cite{bhat2017} \cite{shreedhar2021}, and notably one paper with focus on the initiation of media streams \cite{arisu2018}.
+Furthermore, WebRTC's performance with respect to video data transfer has been extensively researched \cite{fund2013} \cite{jansen2018} \cite{singh2013} \cite{moulay2018}.
+
+% the use of unreliable streams \cite{palmer2018} 
+
+% Paragraph 5: "We structure the remainder of this paper as follows." Give
+% the reader a road-map for the rest of the paper. Try to avoid redundant
+% phrasing, "In Section 2, In section 3, ..., In Section 4, ... ", etc.
+
+% \todo{come back here once rest of paper is written}
+
+We structure the remainder of this paper as follows. Firstly, we shall provide background information on WebRTC, QUIC and WebTransport. Following this, in our Analysis/Requirements chapter, we discuss aims, problem analysis and generated requirements that led to the creation of this project. Next, we outline the essential and "nice-to-have" builds that will allow our research to be cohesive and examine high-level designs that summarise how our builds will operate. Following this, we shall go through how each build was implemented, with particular focus on technical details. After this, we discuss how our builds were evaluated and the results gained from these evaluations. Finally, we shall summarise, reflect on and outline future work in our Conclusion chapter.
+
+% --- end of colin's bit
+
+
+% You can use \todo{} to mark text that needs to be fixed. Anything inside will appear as highlighted 
+% text in the final copy, and you will also get warnings when you compile (so you don't
+% forget to take them out!)
+
+% \todo{Remove the guidance notes from your dissertation before submitting!}
+
+% Why should the reader care about what are you doing and what are you actually doing?
+% \section{Guidance}
+
+% \textbf{Motivate} first, then state the general problem clearly. 
+
+% \section{Writing guidance}
+% \subsection{Who is the reader?}
+
+% This is the key question for any writing. Your reader:
+
+% \begin{itemize}
+%     \item
+%     is a trained computer scientist: \emph{don't explain basics}.
+%     \item
+%     has limited time: \emph{keep on topic}.
+%     \item
+%     has no idea why anyone would want to do this: \emph{motivate clearly}
+%     \item
+%     might not know \emph{anything} about your project in particular:
+%     \emph{explain your project}.
+%     \item
+%     but might know precise details and check them: \emph{be precise and
+%     strive for accuracy.}
+%     \item
+%     doesn't know or care about you: \emph{personal discussions are
+%     irrelevant}.
+% \end{itemize}
+
+% Remember, you will be marked by your supervisor and one or more members
+% of staff. You might also have your project read by a prize-awarding
+% committee or possibly a future employer. Bear that in mind.
+
+% \subsection{References and style guides}
+% There are many style guides on good English writing. You don't need to
+% read these, but they will improve how you write.
+
+% \begin{itemize}
+%     \item
+%     \emph{How to write a great research paper} \cite{Pey17} (\textbf{recommended}, even though you aren't writing a research paper)
+%     \item
+%     \emph{How to Write with Style} \cite{Von80}. Short and easy to read. Available online.
+%     \item
+%     \emph{Style: The Basics of Clarity and Grace} \cite{Wil09} A very popular modern English style guide.
+%     \item
+%     \emph{Politics and the English Language} \cite{Orw68}  A famous essay on effective, clear writing in English.
+%     \item
+%     \emph{The Elements of Style} \cite{StrWhi07} Outdated, and American, but a classic.
+%     \item
+%     \emph{The Sense of Style} \cite{Pin15} Excellent, though quite in-depth.
+% \end{itemize}
+
+% \subsubsection{Citation styles}
+
+% \begin{itemize}
+% \item If you are referring to a reference as a noun, then cite it as: ``\citet{Orw68} discusses the role of language in political thought.''
+% \item If you are referring implicitly to references, use: ``There are many good books on writing \citep{Orw68, Wil09, Pin15}.''
+% \end{itemize}
+
+% There is a complete guide on good citation practice by Peter Coxhead available here: \url{http://www.cs.bham.ac.uk/~pxc/refs/index.html}. 
+% If you are unsure about how to cite online sources, please see \citet{UNSWWebsite}. 
+% \footnote{Specifying an online resource like \url{https://developer.android.com/studio}
+% in a footnote sometimes makes more sense than including it as a formal reference.}
+
+% \subsection{Plagiarism warning}
+
+% \begin{highlight_title}{WARNING}
+    
+%     If you include material from other sources without full and correct attribution, you are commiting plagiarism. The penalties for plagiarism are severe.
+%     Quote any included text and cite it correctly. Cite all images, figures, etc. clearly in the caption of the figure.
+% \end{highlight_title}
+
+% \subsection{Quoting text}
+
+% If you are quoting a long passage, use a \texttt{quote} environment:
+
+% \begin{quote}
+%      If you scribble your thoughts any which way, your readers will surely feel that you care nothing about them. They will mark you down as an egomaniac or a chowderhead -or, worse, they will stop reading you. The most damning revelation you can make about yourself is that you do not know what is interesting and what is not.
+% \end{quote} \citep{Von80}
+
+% If you are quoting inline, like Simon Peyton-Jones' following remark, use quotation marks ``Conveying the intuition is primary, not
+% secondary'' \citep{Pey17}.
+
+
+%==================================================================================================================================

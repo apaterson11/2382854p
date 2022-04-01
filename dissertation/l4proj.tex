@@ -1,0 +1,618 @@
+
+
+
+\documentclass{l4proj}
+
+    
+%==============================================================================
+% Put any additional packages here
+% You can add any packages you want, as long as it does not alter
+% the overall format (e.g. don't change the margins or the reference style).
+%
+\usepackage{pdfpages} % if you want to include a PDF for an ethics checklist, for example
+%
+%
+
+\begin{document}
+
+%==============================================================================
+%% METADATA
+\title{WebTransport: An Investigation Into the Future of Video
+Conferencing Applications} % change this to your title
+\author{Alex Paterson}
+\date{April 1, 2022}
+
+\maketitle
+
+\include{chapters/abstract}
+\include{chapters/introduction}
+\include{chapters/background}
+\include{chapters/analysis}
+\include{chapters/design}
+\include{chapters/implementation}
+\include{chapters/evaluation}
+\include{chapters/conclusion}
+
+
+%==================================================================================================================================
+%  APPENDICES  
+
+\begin{appendices}
+
+\chapter{Appendices}
+
+\section{Wireframe}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/wireframe.png}
+	\caption{UI wireframe}
+    \label{wireframe}
+\end{figure}
+
+\section{Build Screenshot}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/webtransport build.png}
+	\caption{A screenshot of the WebTransport Datagrams build.}
+    \label{wt_build_screenshot}
+\end{figure}
+
+\section{Server Code}
+
+\begin{lstlisting}[language=python, caption={Added server functionality that allowed the server to decode packet headers.}, label=lst:server-decode-headers]
+    
+class DataView:
+    def __init__(self, array, bytes_per_element=1):
+        self.array = array
+        self.bytes_per_element = 1  # because writeBuffer is uint8 array
+
+    def __get_binary(self, start_index, byte_count, signed=False):
+        integers = [self.array[start_index + x] for x in range(byte_count)]
+        bytes = [integer.to_bytes(self.bytes_per_element, byteorder='big', signed=False) for integer in integers]  
+        return reduce(lambda a, b: a + b, bytes)
+
+    def get_uint_32(self, start_index):
+        bytes_to_read = 4
+        return int.from_bytes(self.__get_binary(start_index, bytes_to_read), byteorder='big') 
+
+def parse(array):
+    dv = DataView(array)
+    result = {
+            "streamId": dv.get_uint_32(0),
+            "sequenceNumber": dv.get_uint_32(4),
+            "ts": dv.get_uint_32(8),
+            "eof": dv.get_uint_32(12),
+    }
+    return result
+
+\end{lstlisting}
+
+
+\section{Experiments}
+\subsection{Experiment 1 - Adjusted Bandwidth}
+
+% Please add the following required packages to your document preamble:
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\cline{1-7}
+Bandwidth (Mbps) & Sent Datagrams & Actual Latency (seconds) & Perceived Latency (seconds) & Received Datagrams & Loss \% & Decoding Time (seconds) \\ \cline{1-7}
+100 & 1088 & 1.136301475 & 4.206732677 & 1088 & 0           & 3.070431202 \\
+90  & 1061 & 1.131134778 & 3.40043     & 1061 & 0           & 2.269295222 \\
+80  & 1083 & 1.001572481 & 3.433436894 & 1083 & 0           & 2.431864413 \\
+70  & 1127 & 1.02790683  & 4.453066662 & 1127 & 0           & 3.425159832 \\
+60  & 1100 & 0.994510907 & 3.782689326 & 1100 & 0           & 2.788178419 \\
+50  & 1030 & 1.231666989 & 4.24247917  & 1030 & 0           & 3.010812181 \\
+40  & 1075 & 1.073446929 & 3.428393944 & 1074 & 0.093023256 & 2.354947015 \\
+30  & 1013 & 1.283492599 & 3.967178945 & 1013 & 0           & 2.683686346 \\
+20  & 1027 & 0.976548199 & 3.5965625   & 1027 & 0           & 2.620014301 \\
+10  & 1020 & 1.030102941 & 3.522915787 & 1020 & 0           & 2.492812846 \\
+1   & 1028 & 1.734463651 & 5.145516472 & 1018 & 0.972762646 & 3.411052821 \\
+0.9 & 1075 & 2.066667286 & 5.865989695 & 1070 & 0.465116279 & 3.799322409 \\
+0.8 & 1073 & 2.407485418 & 6.467302079 & 1063 & 0.931966449 & 4.059816661 \\
+0.7 & 1106 & 2.85741443  & 7.013072923 & 1081 & 2.26039783  & 4.155658493 \\
+0.6 & 1169 & 3.723387183 & 9.637460008 & 1139 & 2.566295979 & 5.914072825 \\
+0.5 & 1135 & 4.422732085 & 10.67664949 & 1116 & 1.674008811 & 6.253917405 \\
+0.4 & 1290 & 6.564913738 & 13.61175228 & 1252 & 2.945736434 & 7.046838542 \\
+0.3 & 1448 & 10.52214509 & 19.65060976 & 1406 & 2.900552486 & 9.12846467  \\
+0.2 & 1391 & 38.4851569  & 47.80998836 & 1007 & 27.60603882 & 9.32483146  \\
+0.1 & 1868 & 106.3042405 & 125.3849291 & 1455 & 22.10920771 & 19.0806886 
+\end{tabular}%
+}
+\caption{WebTransport (Datagrams) and Adjusted Bandwidth}
+\label{tab:wt-dg-bw}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llll}
+\cline{1-4}
+Bandwidth (Mbps) & Actual Latency (seconds) & Perceived Latency (seconds) & Decoding Time (seconds)  \\ \cline{1-4}
+100 & 1.649842 & 1.721053 & 0.071211 \\
+90  & 0.93885  & 1.0752   & 0.13635  \\
+80  & 0.77319  & 0.870286 & 0.097095 \\
+70  & 0.9022   & 1.0094   & 0.1072   \\
+60  & 1.7594   & 1.854    & 0.0946   \\
+50  & 0.964667 & 1.040143 & 0.075476 \\
+40  & 0.8306   & 0.94915  & 0.11855  \\
+30  & 1.532235 & 1.661824 & 0.129588 \\
+20  & 1.451182 & 1.538227 & 0.087045 \\
+10  & 0.826905 & 0.937333 & 0.110429 \\
+1   & 10.88552 & 11.71159 & 0.826074 \\
+0.9 & 11.99833 & 12.93026 & 0.931926 \\
+0.8 & 10.87782 & 11.7805  & 0.902679 \\
+0.7 & 13.26152 & 14.28662 & 1.025103 \\
+0.6 & 13.16544 & 14.3124  & 1.14696  \\
+0.5 & 15.94833 & 17.36317 & 1.414833 \\
+0.4 & 19.06361 & 20.80539 & 1.741783 \\
+0.3 & 25.04241 & 27.36714 & 2.324727 \\
+0.2 & 38.15827 & 41.67477 & 3.5165   \\
+0.1 & 93.49667 & 103.8749 & 10.37827
+\end{tabular}%
+}
+\caption{WebTransport Streams Build and Adjusted Bandwidth.}
+\label{tab:wt-streams-bw}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllll}
+\cline{1-6}
+Bandwidth (Mbps) & Received Packets & Lost Packets & Received Frames & Dropped Frames & Decoding Time (seconds) \\ \cline{1-6}
+100 & 10010 & 0 & 1236 & 0  & 0.008545307 \\
+90  & 10043 & 0 & 695  & 38 & 0.078160742 \\
+80  & 10071 & 0 & 610  & 0  & 0.026621311 \\
+70  & 10038 & 0 & 1196 & 0  & 0.020985774 \\
+60  & 10133 & 0 & 333  & 53 & 0.299902834 \\
+50  & 10053 & 0 & 487  & 41 & 0.190211364 \\
+40  & 10001 & 0 & 631  & 0  & 0.027101426 \\
+30  & 10007 & 0 & 1112 & 0  & 0.031383993 \\
+20  & 10025 & 0 & 601  & 28 & 0.162756696 \\
+10  & 10025 & 0 & 1144 & 0  & 0.028993007 \\
+1   & 10006 & 0 & 486  & 0  & 0.036995868 \\
+0.9 & 10064 & 0 & 735  & 0  & 0.075872109 \\
+0.8 & 10124 & 0 & 462  & 38 & 0.139028424 \\
+0.7 & 10022 & 0 & 628  & 0  & 0.035926635 \\
+0.6 & 10003 & 0 & 804  & 0  & 0.017557908 \\
+0.5 & 10049 & 0 & 981  & 0  & 0.01404893  \\
+0.4 & 10068 & 0 & 817  & 30 & 0.077968792 \\
+0.3 & 10062 & 0 & 449  & 41 & 0.147513441 \\
+0.2 & 10007 & 0 & 839  & 0  & 0.039269368 \\
+0.1 & 10029 & 0 & 1107 & 0  & 0.044305606
+\end{tabular}%
+}
+\caption{WebRTC and Adjusted Bandwidth}
+\label{tab:webrtc-bw}
+\end{table}
+
+\subsection{Experiment 2 - Adjusted Latency}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\cline{1-7}
+Latency (ms) &
+  Sent Packets &
+  Actual Latency (seconds) &
+  Perceived Latency (seconds) &
+  Received Packets &
+  Loss (percentage) &
+  Decoding time (seconds) \\ \cline{1-7}
+0   & 1052  & 0.976475 & 3.763616 & 1052 & 0           & 2.787141 \\
+10  & 1077  & 0.874936 & 2.955848 & 1077 & 0           & 2.080913 \\
+20  & 1013  & 0.876925 & 3.087404 & 1013 & 0           & 2.210479 \\
+30  & 1076  & 1.016033 & 3.02558  & 1076 & 0           & 2.009547 \\
+40  & 1062  & 2.668826 & 4.699883 & 1062 & 0           & 2.031057 \\
+50  & 1011  & 5.331895 & 7.24175  & 1011 & 0           & 1.909855 \\
+60  & 1005  & 5.803744 & 7.673044 & 1005 & 0           & 1.8693   \\
+70  & 1051  & 8.46561  & 10.55796 & 1051 & 0           & 2.092348 \\
+80  & 1016  & 9.080874 & 11.00218 & 1016 & 0           & 1.921311 \\
+90  & 1087  & 9.916284 & 12.44948 & 1087 & 0           & 2.533201 \\
+100 & 1080  & 12.11156 & 14.31101 & 1080 & 0           & 2.19945  \\
+150 & 1065  & 14.59849 & 16.41119 & 486  & 54.3662     & 1.812696 \\
+200 & 1052  & 12.39325 & 14.30124 & 215  & 79.56274    & 1.907984 \\
+250 & 1059  & 12.14835 & 14.09013 & 130  & 87.72427    & 1.941771 \\
+\end{tabular}%
+}
+\caption{WebTransport (Datagrams) and Adjusted Latency}
+\label{tab:wt-dg-lat}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llll}
+\cline{1-4}
+Latency (ms) & Perceived Latency (seconds) & Actual Latency (seconds) & Decoding time (seconds) \\ \cline{1-4}
+0   & 1.025143 & 1.156857 & 0.131714 \\
+10  & 1.391    & 1.542636 & 0.151636 \\
+20  & 0.604238 & 0.726238 & 0.122    \\
+30  & 0.622409 & 0.762545 & 0.140136 \\
+40  & 4.85487  & 5.27887  & 0.424    \\
+50  & 6.926783 & 7.442522 & 0.515739 \\
+60  & 8.358522 & 8.970261 & 0.611739 \\
+70  & 10.35474 & 11.1183  & 0.763565 \\
+80  & 11.10536 & 11.90886 & 0.8035   \\
+90  & 12.27232 & 13.18668 & 0.914364 \\
+100 & 14.19643 & 15.182   & 0.985565 \\
+150 & 14.03242 & 15.94675 & 1.914333 \\
+200 & 11.62667 & 15.0285  & 3.401833 \\
+250 & 10.02767 & 15.99867 & 5.971   
+\end{tabular}%
+}
+\caption{WebTransport (Streams) and Adjusted Latency}
+\label{tab:wt-streams-lat}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllll}
+\cline{1-6}
+Latency (ms) & Received Packets & Lost Packets & Received Frames & Dropped Frames & Decoding Time \\ \cline{1-6}
+0   & 10078 & 0 & 563  & 43 & 0.121372414 \\
+10  & 10003 & 0 & 920  & 0  & 0.029598477 \\
+20  & 10006 & 0 & 1098 & 0  & 0.010996354 \\
+30  & 10040 & 0 & 591  & 0  & 0.025365482 \\
+40  & 10052 & 0 & 982  & 0  & 0.025781059 \\
+50  & 10114 & 0 & 607  & 32 & 0.099284333 \\
+60  & 10013 & 0 & 585  & 33 & 0.115221987 \\
+70  & 10074 & 0 & 613  & 32 & 0.104486792 \\
+80  & 10017 & 0 & 925  & 0  & 0.029551351 \\
+90  & 10101 & 0 & 1107 & 0  & 0.01095208  \\
+100 & 10059 & 0 & 1010 & 0  & 0.011485629 \\
+150 & 10038 & 0 & 875  & 0  & 0.053164571 \\
+200 & 10008 & 0 & 847  & 0  & 0.055348288 \\
+250 & 10038 & 0 & 611  & 35 & 0.109828794 \\
+500 & 10096 & 0 & 352  & 0  & 0.065306818
+\end{tabular}%
+}
+\caption{WebRTC and Adjusted Latency.}
+\label{tab:webrtc-lat}
+\end{table}
+
+\subsection{Experiment 3 - Adjusting Loss}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\hline
+Link Loss   (Percentage) & Sent Packets & Actual Latency & Perceived Latency & Received Packets & Packet Loss (Percentage) & Decoding Time (seconds) \\ \hline
+0  & 1030 & 1.17875  & 5.058732 & 1030 & 0        & 3.879982 \\
+1  & 1037 & 1.181895 & 4.23154  & 977  & 5.785921 & 3.049646 \\
+2  & 1020 & 0.861158 & 2.968145 & 904  & 11.37255 & 2.106986 \\
+3  & 1097 & 1.051883 & 3.678829 & 892  & 18.68733 & 2.626946 \\
+4  & 1084 & 1.006476 & 3.042372 & 850  & 21.58672 & 2.035895 \\
+5  & 1068 & 1.070334 & 3.467044 & 773  & 27.62172 & 2.39671  \\
+6  & 1004 & 0.996751 & 2.853883 & 696  & 30.67729 & 1.857132 \\
+7  & 1020 & 1.107166 & 4.041603 & 670  & 34.31373 & 2.934438 \\
+8  & 1111 & 1.814649 & 4.7985   & 644  & 42.0342  & 2.983851 \\
+9  & 1119 & 1.199182 & 3.801895 & 627  & 43.96783 & 2.602713 \\
+10 & 1045 & 1.23803  & 4.057154 & 571  & 45.35885 & 2.819124 \\
+11 & 1039 & 2.205973 & 5.294235 & 406  & 60.92397 & 3.088262
+\end{tabular}%
+}
+\caption{WebTransport (Datagrams) and Adjusted Loss}
+\label{tab:wt-dg-loss}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llll}
+\cline{1-4}
+Loss (percentage) & Actual Latency (seconds) & Perceived Latency (seconds) & Decoding Time (seconds) \\ \cline{1-4}
+0  & 1.032667 & 1.115    & 0.082333 \\
+1  & 0.840833 & 1.153333 & 0.3125   \\
+2  & 1.522783 & 1.671609 & 0.148826 \\
+3  & 1.631944 & 1.799833 & 0.167889 \\
+4  & 1.68384  & 1.81068  & 0.12684  \\
+5  & 1.59756  & 1.74608  & 0.14852  \\
+6  & 5.77372  & 6.16508  & 0.39136  \\
+7  & 5.095111 & 5.528333 & 0.433222 \\
+8  & 5.176346 & 5.624923 & 0.448577 \\
+9  & 4.043    & 4.443647 & 0.400647 \\
+10 & 3.435048 & 3.894095 & 0.459048 \\
+11 & 2.259143 & 2.834    & 0.574857 \\
+12 & 7.822733 & 9.092333 & 1.2696  
+\end{tabular}%
+}
+\caption{WebTransport (Streams) and Adjusted Loss.}
+\label{tab:wt-streams-loss}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllll}
+\cline{1-6}
+Loss (percentage) & Received Packets & Lost Packets & Received Frames & Dropped Frames & Decoding Time \\ \cline{1-6}
+0  & 10052 & 0 & 1093 & 0  & 0.021029304 \\
+1  & 10033 & 0 & 469  & 43 & 0.122772727 \\
+2  & 10039 & 0 & 580  & 48 & 0.103547619 \\
+3  & 10007 & 0 & 736  & 0  & 0.018910204 \\
+4  & 10016 & 0 & 647  & 0  & 0.022996909 \\
+5  & 10104 & 0 & 612  & 41 & 0.09699811  \\
+6  & 10087 & 0 & 623  & 34 & 0.099592308 \\
+7  & 10001 & 0 & 1229 & 0  & 0.007458469 \\
+8  & 10189 & 0 & 601  & 35 & 0.096801066 \\
+9  & 10056 & 0 & 979  & 0  & 0.029156442 \\
+10 & 10085 & 0 & 608  & 30 & 0.091994526 \\
+20 & 10046 & 0 & 1002 & 26 & 0.034274409
+\end{tabular}%
+}
+\caption{WebRTC and Adjusted Loss.}
+\label{tab:wrtc-loss}
+\end{table}
+
+% Use separate appendix chapters for groups of ancillary material that support your dissertation. 
+% Typical inclusions in the appendices are:
+
+% \begin{itemize}
+% \item
+%   Copies of ethics approvals (you must include these if you needed to get them)
+% \item
+%   Copies of questionnaires etc. used to gather data from subjects. Don't include
+%   voluminous data logs; instead submit these electronically alongside your source code.
+% \item
+%   Extensive tables or figures that are too bulky to fit in the main body of
+%   the report, particularly ones that are repetitive and summarised in the body.
+% \item Outline of the source code (e.g. directory structure), 
+%     or other architecture documentation like class diagrams.
+% \item User manuals, and any guides to starting/running the software. 
+% Your equivalent of \texttt{readme.md} should be included.
+
+% \end{itemize}
+
+% \textbf{Don't include your source code in the appendices}. It will be
+% submitted separately.
+
+\subsection{Experiment 4 - Adjusting Network Quality (Bandwidth, Latency, Loss)}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllllllll}
+\cline{1-10}
+Configuration Number &
+  Link Loss (percentage) &
+  Bandwidth (Mbps) &
+  Latency (milliseconds) &
+  Sent Packets &
+  Actual Latency (seconds) &
+  Perceived Latency (seconds) &
+  Received Packets &
+  Application Loss (percentage) &
+  Decoding Time (seconds) \\ \cline{1-10}
+1  & 0   & 100 & 0     & 1041 & 0.995932 & 3.187219 & 1041 & 0        & 2.191287 \\
+2  & 0.5 & 90  & 12.5  & 1039 & 1.043007 & 3.418815 & 999  & 3.849856 & 2.375808 \\
+3  & 1.5 & 80  & 25    & 1003 & 6.242995 & 9.122294 & 928  & 7.477567 & 2.879299 \\
+4  & 2   & 70  & 37.5  & 1060 & 12.41988 & 14.447   & 550  & 48.11321 & 2.027118 \\
+5  & 2.5 & 60  & 50    & 1028 & 10.9427  & 14.42868 & 470  & 54.28016 & 3.485983 \\
+6  & 3   & 50  & 62.5  & 1061 & 13.64404 & 15.40292 & 320  & 69.83977 & 1.758886 \\
+7  & 3.5 & 40  & 75    & 1183 & 22.66595 & 25.52615 & 325  & 72.52747 & 2.860203 \\
+8  & 4   & 30  & 87.5  & 1344 & 26.31809 & 29.81496 & 338  & 74.85119 & 3.49687  \\
+9  & 4.5 & 20  & 100   & 1073 & 18.52365 & 22.44569 & 180  & 83.2246  & 3.922042 \\
+10 & 5   & 10  & 112.5 & 1281 & 42.95607 & 45.52616 & 248  & 80.64012 & 2.570089 \\
+11 & 5.5 & 1   & 125   & 1153 & 29.30913 & 35.47967 & 237  & 79.44493 & 6.170536 \\
+12 & 6   & 0.9 & 137.5 & 1285 & 47.06256 & 50.4007  & 239  & 81.40078 & 3.338144 \\
+13 & 6.5 & 0.8 & 150   & 1092 & 50.08097 & 52.97945 & 231  & 78.84615 & 2.89848 
+\end{tabular}%
+}
+\caption{WebTransport (Datagrams) and Adjusted Network Quality (Bandwidth, Latency and Loss)}
+\label{tab:wt-dg-nwq}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllllllll}
+\cline{1-7}
+Configuration Number &
+  Link Loss (percentage) &
+  Bandwidth (Mbps) &
+  Latency (milliseconds) &
+  Actual Latency (seconds) &
+  Perceived Latency (seconds) &
+  Decoding Time (seconds) &
+   \\ \cline{1-7}
+1  & 0   & 100 & 0    & 0.6966   & 0.79348  & 0.09688  &  &  &  \\
+2  & 0.5 & 90  & 12.5 & 3.47748  & 3.82252  & 0.34504  &  &  &  \\
+3  & 1   & 100 & 0    & 1.442727 & 1.58     & 0.137273 &  &  &  \\
+4  & 1.5 & 80  & 25   & 1.8308   & 2.8824   & 1.0516   &  &  &  \\
+5  & 2   & 70  & 37.5 & 9.937667 & 11.878   & 1.940333 &  &  &  \\
+6  & 2.5 & 60  & 50   & 9.179875 & 11.88813 & 2.70825  &  &  &  \\
+7  & 3   & 50  & 62.5 & 10.9075  & 14.412   & 3.5045   &  &  &  \\
+8  & 3.5 & 40  & 75   & 10.4802  & 15.6172  & 5.137    &  &  &  \\
+9  & 4   & 30  & 87.5 & 12.8826  & 19.613   & 6.7304   &  &  &  \\
+10 & 4.5 & 20  & 100  & 13.4196  & 21.3066  & 7.887    &  &  &  \\
+
+\end{tabular}%
+}
+\caption{WebTransport (Streams) and Adjusted Network Quality (Bandwidth, Latency and Loss)}
+\label{tab:wt-streams-nwq}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllllll}
+\cline{1-9}
+Configuration Number &
+  Loss (percentage) &
+  Bandwidth (Mbps) &
+  Latency (ms) &
+  Received Packets &
+  Packets Lost &
+  Received Frames &
+  Frames Dropped &
+  Decoding Time (seconds) \\ \cline{1-9}
+1  & 0   & 100 & 0     & 10037 & 0   & 362  & 85  & 0.219081 \\
+2  & 0.5 & 90  & 12.5  & 10020 & 0   & 1014 & 0   & 0.013055 \\
+3  & 1.5 & 80  & 25    & 10008 & 0   & 945  & 0   & 0.014511 \\
+4  & 2   & 70  & 37.5  & 10041 & 0   & 559  & 0   & 0.116764 \\
+5  & 2.5 & 60  & 50    & 10082 & 0   & 318  & 31  & 0.422052 \\
+6  & 3   & 50  & 62.5  & 10025 & 27  & 314  & 18  & 0.406777 \\
+7  & 3.5 & 40  & 75    & 10017 & 153 & 189  & 0   & 0.19518  \\
+8  & 4   & 30  & 87.5  & 10179 & 0   & 369  & 23  & 0.18094  \\
+9  & 4.5 & 20  & 100   & 10037 & 0   & 633  & 0   & 0.020564 \\
+10 & 5   & 10  & 112.5 & 10009 & 0   & 389  & 115 & 0.195751 \\
+11 & 5.5 & 1   & 125   & 10116 & 0   & 328  & 24  & 0.238981 \\
+12 & 6   & 0.9 & 137.5 & 10033 & 0   & 500  & 0   & 0.074302 \\
+13 & 6.5 & 0.8 & 150   & 10160 & 0   & 359  & 31  & 0.200252 \\
+14 & 7   & 0.7 & 162.5 & 10037 & 0   & 544  & 0   & 0.065722 \\
+15 & 7.5 & 0.6 & 175   & 10023 & 0   & 509  & 0   & 0.037207 \\
+16 & 8   & 0.5 & 187.5 & 10076 & 0   & 289  & 39  & 0.241652 \\
+17 & 8.5 & 0.4 & 200   & 10009 & 4   & 663  & 2   & 0.023171 \\
+18 & 9   & 0.3 & 212.5 & 10025 & 21  & 490  & 66  & 0.155466 \\
+19 & 9.5 & 0.2 & 225   & 10060 & 0   & 658  & 0   & 0.029611 \\
+20 & 10  & 0.1 & 237.5 & 10005 & 0   & 558  & 0   & 0.065294
+\end{tabular}%
+}
+\caption{WebRTC and Adjusted Network Quality (Bandwidth, Latency and Loss)}
+\label{tab:wrtc-nwq}
+\end{table}
+
+\subsection{Experiment 5 - Adjusting CPU Usage}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\cline{1-7}
+CPU Usage (percentage) &
+  Sent Packets &
+  Actual Latency (seconds) &
+  Perceived Latency (seconds) &
+  Received Packets &
+  Loss (percentage) &
+  Decoding Time (seconds) \\ \cline{1-7}
+100 & 1005 & 0.843825 & 3.191516 & 1005 & 0        & 2.347691 \\
+90  & 1091 & 5.716807 & 17.91599 & 1081 & 0.91659  & 12.19918 \\
+80  & 1123 & 6.129455 & 16.55441 & 1123 & 0        & 10.42496 \\
+70  & 1158 & 7.535191 & 17.6615  & 1158 & 0        & 10.12631 \\
+60  & 1406 & 10.63798 & 25.1972  & 1395 & 0.782361 & 14.55922 \\
+50  & 1054 & 7.103321 & 19.56197 & 1009 & 4.26945  & 12.45864 \\
+40  & 1051 & 1.031816 & 3.963888 & 1051 & 0        & 2.932071 \\
+30  & 1008 & 1.530039 & 6.713181 & 1008 & 0        & 5.183142 \\
+20  & 1051 & 6.363102 & 17.89056 & 1051 & 0        & 11.52746 \\
+10  & 324  & 37.08473 & 54.46188 & 307  & 5.246914 & 17.37716 \\
+    &      &          &          &      &          &          \\
+    &      &          &          &      &          &         
+\end{tabular}%
+}
+\caption{WebTransport (Datagrams) and Adjusted CPU Usage}
+\label{tab:wt-dg-cpu}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\cline{1-4}
+CPU Usage (percentage) & Actual Latency (seconds) & Perceived Latency (seconds) & Decoding Time (seconds) &  &  &  \\ \cline{1-4}
+100 & 0.46128  & 0.49028  & 0.029    &  &  &  \\
+90  & 0.5764   & 0.62072  & 0.04432  &  &  &  \\
+80  & 0.430417 & 0.492625 & 0.062208 &  &  &  \\
+70  & 0.43328  & 0.4506   & 0.01732  &  &  &  \\
+60  & 0.39476  & 0.4252   & 0.03044  &  &  &  \\
+50  & 0.49832  & 0.5346   & 0.03628  &  &  &  \\
+40  & 1.951348 & 2.192    & 0.240652 &  &  &  \\
+30  & 1.005909 & 1.134682 & 0.128773 &  &  &  \\
+20  & 1.863    & 2.076957 & 0.213957 &  &  &  \\
+10  & 5.56887  & 6.098652 & 0.529783 &  &  &  \\
+    &          &          &          &  &  &  \\
+    &          &          &          &  &  & 
+\end{tabular}%
+}
+\caption{WebTransport (Streams) and Adjusted CPU Usage}
+\label{tab:wt-streams-cpu}
+\end{table}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllll}
+\cline{1-6}
+CPU Usage (percentage) & Received Packets & Lost Packets & Received Frames & Dropped Frames & Decoding Time (seconds) &  \\ \cline{1-6}
+100 & 10041 & 0 & 633  & 40  & 0.054896 &  \\
+90  & 10048 & 0 & 1431 & 0   & 0.006377 &  \\
+80  & 10052 & 0 & 1291 & 0   & 0.008763 &  \\
+70  & 10023 & 0 & 1067 & 0   & 0.00482  &  \\
+60  & 10040 & 0 & 814  & 90  & 0.117165 &  \\
+50  & 10007 & 0 & 728  & 82  & 0.138772 &  \\
+40  & 10031 & 0 & 1095 & 0   & 0.018466 &  \\
+30  & 10052 & 0 & 637  & 101 & 0.106019 &  \\
+    &       &   &      &     &          &  \\
+    &       &   &      &     &          &  \\
+    &       &   &      &     &          &  \\
+    &       &   &      &     &          & 
+\end{tabular}%
+}
+\caption{WebRTC and Adjusted CPU Usage}
+\label{tab:wrtc-cpu}
+\end{table}
+
+\section{User Survey Ethics Form}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/ethics/checklist-1.png}
+	\caption{Signed ethics checklist - Part 1.}
+    \label{ethics-1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{images/ethics/checklist-2.png}
+	\caption{Signed ethics checklist - Part 2.}
+    \label{ethics-2}
+\end{figure}
+
+
+\end{appendices}
+
+%==================================================================================================================================
+%   BIBLIOGRAPHY   
+
+% The bibliography style is agsm (Harvard)
+% The bibliography always appears last, after the appendices.
+
+
+% \bibliographystyle{agsm}
+
+% % Force the bibliography not to be numbered
+% \renewcommand{\thechapter}{0} 
+% \bibliography{l4proj.bib}
+\printbibliography
+
+
+\end{document}

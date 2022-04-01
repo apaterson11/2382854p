@@ -1,0 +1,58 @@
+
+\chapter{Analysis/Requirements}
+In this chapter, we shall outline the aims of the project and discuss how we arrived at our solution for achieving these aims. 
+
+\section{Aims}
+
+The main goal of this project is to quantitatively evaluate the performance of several WebTransport builds of a simple video conferencing application that use different methods for transferring data (streams, datagrams). Additionally, the project aims to evaluate a WebRTC build for comparison. Evaluation shall focus on video data transfer due to time constraints. Quantitative metrics for measuring performance shall include latency, bandwidth, loss and general performance under simulated network degradation. 
+
+Furthermore, another key question this project aims to answer is whether or not the extra development overhead caused by utilising WebTransport makes a practical difference to the user experience or not - qualitative experiments shall be carried out to evaluate participants’ experience when using the different builds. We consider answering this question to be the secondary aim of this project.
+
+Overall, the project aims to investigate the suitability of using WebTransport in a live video conferencing application and evaluate whether or not the effort required for using the developing API is practically worthwhile with respect to the end-user experience.
+
+\section{Problem Analysis}
+
+After establishing that we wanted to investigate QUIC's potential use for real-time video conferencing applications, we started researching existing technologies behind video conferencing applications and identifying their strengths and weaknesses. It quickly became clear that WebRTC is the most dominant API, with large companies such as Microsoft and Discord using it for their flagship video conferencing applications. 
+
+However, WebRTC does not utilise QUIC, and instead utilises aging technologies such as SRTP and SCTP. Palmer \textit{et al.}'s draft \cite{palmerdraft} to the QUIC Working Group combined with Perkins and Ott's 2018 paper \cite{perkins2018} suggested to us that QUIC could be utilised effectively in video conferencing scenarios if there was an existing API to facilitate the protocol's experimental datagrams extension. After some research, we found WebTransport. We established that there was no existing formal evaluation for video conferencing applications utilising WebTransport; furthermore, there did not appear to be any formal evaluation for WebTransport at all. Reading through the documentation and working drafts of the API, we had successfully narrowed it down as being our candidate API for facilitating the use of QUIC in a video conferencing application.
+
+\section{Requirements}
+
+In order to achieve the project's aim of evaluating WebTransport's suitability for use in video conferencing applications, several builds of a simple video conferencing application must be developed. The "must have" and "should have" requirements of these builds are outlined as follows.
+
+\textbf{"Must have" requirements:}
+\begin{itemize}
+  \item We must have a WebTransport build that sends and receives video data via datagrams.
+  \item We must have a WebTransport build that sends and receives video data via streams.
+\end{itemize}
+
+These are "must have" requirements as the focus of this investigation is on how we transfer video data in WebTransport builds.
+
+\textbf{"Should have" requirements:}
+\begin{itemize}
+  \item All builds should send and receive audio data.
+  \item All builds should send and receive text data.
+    \item We should have a WebRTC build that sends and receives video data.
+    \item Builds should have functionality to host multiple clients.
+\end{itemize}
+
+The first two items relating to audio and text data are "should have" requirements as audio data and text data (for text chat functionality) are important features in a video conferencing experience. However, the scope of this project shall focus on video data due to the timescale of the project - if nothing else, suggestions for future work relating to audio and text data shall be provided.
+The WebRTC build is only a "should have" requirement as it will be useful for comparison during evaluation of the WebTransport builds. However, it is not completely necessary as the WebTransport builds can be evaluated independently (although this would perhaps weaken any conclusions drawn).  
+The point regarding multiple clients is a "should have" requirement mainly due to time constraints - evaluation involving a simple connection involving only two clients is adequate for evaluating WebTransport. Furthermore, it is preferable that a user survey participant only focuses on one incoming video feed so that their attention is solely on the quality of that instance, thus providing better feedback on the performances of the various underlying technologies and data transfer methods. 
+
+\hfill
+
+With this, we have a plan for how to achieve our aims. Developing these builds and conducting experiments on them shall fill this gap in existing research by evaluating WebTransport, specifically in a video conferencing context. Furthermore, Palmer \textit{et al.}'s \cite{palmer2018} and Perkin and Ott's \cite{perkins2018} research shall be continued - if WebTransport proves to have potential, this would provide a solution to Perkin and Ott's criticism of Palmer \textit{et al.}'s draft.  
+
+% \section{Guidance}
+% Make it clear how you derived the constrained form of your problem via a clear and logical process. 
+
+% The analysis chapter explains the process by which you arrive at a concrete design. In software 
+% engineering projects, this will include a statement of the requirement capture process and the
+% derived requirements.
+
+% In research projects, it will involve developing a design drawing on
+% the work established in the background, and stating how the space of possible projects was
+% sensibly narrowed down to what you have done.
+
+%==================================================================================================================================

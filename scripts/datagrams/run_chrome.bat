@@ -1,0 +1,1 @@
+chrome --enable-experimental-web-platform-features --ignore-certificate-errors-spki-list==E96AsZ3PMcFI5xG6oJ/Nf076oZfvooubw8nlRwZn0Jk= --origin-to-force-quic-on=web-platform.test:0 http://localhost:4000 http://localhost:4001

@@ -1,0 +1,81 @@
+%==============================================================================
+%% ABSTRACT
+\begin{abstract}
+    The continual development of QUIC has lead to the emergence of WebTransport, a promising new API. WebTransport aims to do many things, notably to receive "media pushed from server with minimal latency (out-of-order)" and provide developers with a "flexible set of possibile (sic) capabilities" \cite{wtexplainer}. These aims combined with QUIC's capabilities for fast and flexible data transfer could potentially be applied to creating more efficient video conferencing applications. This paper aims to evaluate WebTransport's potential for use in video conferencing applications in comparison to an existing alternative, WebRTC. Specifically, the evaluation focuses on video data transfer. Three application builds were created: a WebRTC build, a WebTransport build utilising datagrams and a WebTransport build utilising streams. The performances of these builds were then all quantitatively and qualitatively evaluated through the use of performance-oriented experiments and user evaluations. A secondary aim of the paper is to evaluate whether the additional development overhead of utilising WebTransport even makes a noticeable difference to end users.
+    Our results show that our WebRTC build still outperforms both our WebTransport builds; this is mainly due to the ill-fitting nature of streams for real-time applications and the weak implementations of packet-handling algorithms in our Datagrams build. Furthermore, our WebTransport Streams build performs better than its Datagrams counterpart, once again due to the latter's poor packet handling.  As our WebTransport results were so poor, we felt that we were not able to answer the question presented in the secondary aim of the paper because the extra development overhead was not worth the results in this instance. However, we conclude that our WebTransport Datagrams build could still theoretically outperform WebRTC and therefore be worth the extra development overhead if its identified weaknesses were substantially improved upon. 
+    % Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
+    % \vskip 0.5em
+    % ``XYZ is bad. This project investigated ABC to determine if it was better. 
+    % ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
+    % never been used together. It was found that  
+    % ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
+\end{abstract}
+
+%==============================================================================
+%% ACKNOWLEDGEMENTS
+\chapter*{Acknowledgements}
+% Enter any acknowledgements here. This is optional; you may leave this blank if you wish,
+% or remove the entire chapter
+% We give thanks to the Gods of LaTeX, who in their eternal graciousness, 
+% have granted that this document may compile without errors or overfull hboxes.
+
+I would like to thank my parents who have supported me endlessly throughout my time at university. This is the culmination of 17 years of education overseen by them, so if it's bad, it's their fault. 
+
+Thank you, Beth, for being with me every step of the way. None of this would be the same without you.
+
+Thank you to all the friends I have made (and managed to keep) in the last four years. There are too many to name (I am very popular), but if you are reading this, chances are you are one of them. 
+
+Lastly, I would like to thank Colin Perkins for supervising this project - thank you, Colin, for managing to convince me every week that everything was not, in fact, going incredibly wrong, and was instead only going slightly wrong. 
+
+%==============================================================================
+
+% EDUCATION REUSE CONSENT FORM
+% If you consent to your project being shown to future students for educational purposes
+% then insert your name and the date below to  sign the education use form that appears in the front of the document. 
+% You must explicitly give consent if you wish to do so.
+% If you sign, your project may be included in the Hall of Fame if it scores particularly highly.
+%
+% Please note that you are under no obligation to sign 
+% this declaration, but doing so would help future students.
+%
+\def\consentname {Alex Paterson} % your full name
+\def\consentdate {10th February 2022} % the date you agree
+%
+\educationalconsent
+
+
+%==============================================================================
+\tableofcontents
+
+%==============================================================================
+%% Notes on formatting
+%==============================================================================
+% The first page, abstract and table of contents are numbered using Roman numerals and are not
+% included in the page count. 
+%
+% From now on pages are numbered
+% using Arabic numerals. Therefore, immediately after the first call to \chapter we need the call
+% \pagenumbering{arabic} and this should be called once only in the document. 
+%
+%
+% The first Chapter should then be on page 1. 
+
+% PAGE LIMITS
+% You are allowed 40 pages for a 40 credit project and 30 pages for a 
+% 20 credit report. 
+% This includes everything numbered in Arabic numerals (excluding front matter) up
+% to but *excluding the appendices and bibliography*.
+%
+% FORMATTING
+% You must not alter text size (it is currently 10pt) or alter margins or spacing.
+% Do not alter the bibliography style. 
+%
+%==================================================================================================================================
+%
+% IMPORTANT
+% The chapter headings and structure here are **suggestions**. You don't have to follow this model if
+% it doesn't fit your project. Every project should have an introduction and conclusion,
+% however.  If in doubt, your supervisor can give you specific guidance; their view takes precedence over
+% the structure suggested here.
+%
+%==================================================================================================================================

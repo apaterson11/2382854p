@@ -1,0 +1,49 @@
+
+\chapter{Conclusion}    
+% Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee). This chapter should be short in most dissertations; maybe one to three pages.
+% \section{Guidance}
+% \begin{itemize}
+%     \item
+%         Summarise briefly and fairly.
+%     \item
+%         You should be addressing the general problem you introduced in the
+%         Introduction.        
+%     \item
+%         Include summary of concrete results (``the new compiler ran 2x
+%         faster'')
+%     \item
+%         Indicate what future work could be done, but remember: \textbf{you
+%         won't get credit for things you haven't done}.
+% \end{itemize}
+
+\section{Summary}
+% Summarise what you did; answer the general questions you asked in the introduction. What did you achieve? Briefly describe what was built and summarise the evaluation results.
+In this project, we developed three builds of a video conferencing application utilising WebTransport and WebRTC. Two of these builds utilised WebTransport - out of these, one sent video data via datagrams and the other via streams. The third was a standard WebRTC build. 
+
+We then loaded each of these builds onto a simulated network by using Mininet. Then, we altered different network quality and system metrics and evaluated how each build performed under the set conditions. We found that WebRTC outperformed both WebTransport builds, and our Streams build performed better than our Datagrams build. This achieved the project's main aim of quantitatively analysing different WebTransport (and WebRTC for comparison) builds of a video conferencing application that use different data transfer methods. 
+
+Then, we conducted a user survey asking for participants' personal evaluations of each build. The results from this survey reflected the results from our experiments, making the survey a success in this regard. A key aim of this survey was to evaluate whether the extra development overhead of using WebTransport made a perceivable positive difference to the user or not. However, as our WebTransport builds did not outperform WebRTC, this particular question was not answered by this project as the effect on the user experience was negative. 
+
+\section{Reflection}
+% Discuss what went well and what didn't and how you would do things differently if you did this project again.
+This project was certainly ambitious - we had no previous experience in developing video conferencing applications and very limited experience in developing networked applications. Because of this, development and evaluation took a lot longer than expected. We drew up a lot of ideas during the design phase that were never close to being implemented as it took us so long to meet the "must have" requirements. In particular, having builds that utilised audio and text data would have been interesting and could have led to a more comprehensive evaluation of the flexibility of WebTransport. 
+
+In our evaluation phase, we feel that there could have been a more comprehensive and effective evaluation that simply did not happen due to time constraints. Unfortunately, it took a lot longer than expected to set up our testbed; learning the Mininet and Selenium API was harder than we had anticipated. Moreover, our decision to conduct our evaluation on a virtual machine was unwise - various bugs and reduced processing power hindered progress significantly. If we were to do this project again, we would utilise a physical machine for conducting our experiments.
+In hindsight, we think there are three main weaknesses in our evaluation. Firstly, we feel that there could have been additional tests collecting more varied measurements such as frames discarded, jitter and round-trip times - these would have helped strengthen our results. This was not done simply due to lack of time. Secondly, we feel that some data being impossible to gather due to connection establishment issues in our simulated poor network conditions detracted from the scientific soundness of our evaluations. Had we more time, we would have investigated a way to establish connections in perfect network conditions and then run the experiments with the desired metrics after. Finally, conducting the experiments in a "perfect" network topology weakened our results as it made the experiments less realistic. Using a non-"perfect" network topology (i.e. sending large dummy data through switches alongside our build data) would help legitimise our results - comparing results between a perfect and non-perfect network would also make for interesting discussion. If we were to do this project again, these three weaknesses would be addressed.
+
+Overall, we are satisfied with the project. We met our primary aim of quantitatively evaluating our builds and our results are quite strong. Developing our three builds was a valuable learning experience and although they did not all perform well, they still provided valuable insight after our evaluations and allowed us to discuss the potential of WebTransport.
+
+\section{Future work}
+% Discuss what you would do if you could take this further -- where would the interesting directions to go next be? (e.g. you got another year to work on it, or you started a company to work on this, or you pursued a PhD on this topic)
+The most interesting direction to take this project would be to continue developing the WebTransport Datagrams build to address the shortcomings outlined in our experiments. We still feel that WebTransport has a lot of potential, and getting the build to a stage where it outperforms WebRTC would be interesting for many reasons. Firstly, it would be a significant development as it could help garner support for WebTransport - this is important as widespread adoption is key for the growth and potential maturation of the technology. Secondly, getting it to this stage would allow us to try to answer this project's secondary aim of evaluating whether users would even notice when a build outperforms WebRTC.
+
+In order to achieve a more comprehensive evaluation of WebTransport's flexibility, future work should aim to include audio and text data as well as video data in our builds. Specifically, the unused "nice to have" builds outlined in our Design chapter would be interesting to implement and evaluate for the reasons stated in that chapter.
+
+To strengthen the experiments in our evaluation, the additional tests as described in our "Reflection" section could be undertaken.
+
+Another interesting angle that could help strengthen the case for adopting WebTransport would be to evaluate QUIC and SRTP as well as WebTransport and WebRTC. One of WebTransport's main advantages is that it uses QUIC, so including this in our evaluations would help legitimise our results and conclusions.
+
+
+%==================================================================================================================================
+%
+% 
