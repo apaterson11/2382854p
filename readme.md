@@ -13,3 +13,5 @@ Project structure:
 * `testing/` The source code used for testing each build.
 * `timelog.rmd` The time log for my project.
 * `plan.md` A week-by-week plan for the project. 
+
+To run this project, the README instructions in `builds/`, `scripts/` and `testing/` must all be followed carefully.

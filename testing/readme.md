@@ -1,10 +1,12 @@
 # 2382854p L4 Project - Testing
 
+NOTE: Tests will not work until the README instructions in `/builds` have been completed.
+
 To run our tests, these scripts must be placed in a Linux machine with Mininet, Selenium and Google Chrome installed. Additionally, please install the required python packages by running `pip install -r` in the same directory as our `requirements.txt` provided in the `setup_instructions/` folder. Additionally, `npm install` may need to be run in each build directory on your machine.
 
 Chrome settings must be configured.
 * Navigate to `chrome://flags/#allow-insecure-localhost`. Enable "Allow invalid certificates for resources loaded from localhost." and "Insecure origins treated as secure". In the box below the latter, please enter `http://10.0.0.2:4001/`. Finally, disable "Block insecure private network requests."
-* Certificates must also be set up. In Chrome, located "Manage Certificates" in your settings. Navigate to the "Trusted Root Certification Authorities" tab and click Import. Follow the instructions to import `cacert.pem`. If this does not work, follow the instructions in `setup_instructions/certs/README.md`. The certificate this document references is the `cacert.pem` file in the same folder.
+* Certificates must also be set up. In Chrome, located "Manage Certificates" in your settings. Navigate to the "Trusted Root Certification Authorities" tab and click Import. Follow the instructions to import `setup_instructions/certs/cacert.pem`. If this does not work, follow the instructions in `setup_instructions/certs/README.md`. The certificate this document references is the `cacert.pem` file in the same folder.
 
 To set up our WebTransport over HTTP/3 server, please follow the first three instructions in `setup_instructions/Running WPT WebTransport test server.pdf`.
 
